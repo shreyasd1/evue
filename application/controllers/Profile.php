@@ -22,7 +22,6 @@ class Profile extends CI_Controller
 					$data['user_id']	= $this->tank_auth->get_user_id();
 					$data['username']	= $this->tank_auth->get_username();
 					$data['name']		= $this->session->userdata("name");
-					$data['user_authenticate']=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
 
 					$data['add_review']  =base_url().'index.php/Profile/add_review';
 					$data['my_list'] =$this->Common_model->getAll('rating')->result_array();
@@ -34,7 +33,21 @@ class Profile extends CI_Controller
 
 		}
 	}
+
+		public function getProfile($id){
+				$data['user_authenticate']=$this->Common_model->getAll("users",array('id'=>$id))->row_array();
+				$data['add_review']  =base_url().'index.php/Profile/add_review';
+				$data['my_list'] =$this->Common_model->getAll('rating')->result_array();
+
+				$this->load->view('common/header');
+				$this->load->view('common/nav',$data);
+				$this->load->view('profile',$data);
+				$this->load->view('common/footer');
+		}
 		function add_review(){
+			
+			$data['my_list'] =$this->Common_model->getAll('rating')->result_array();
+
 			$data=$this->input->post();
 			$insert=$this->Common_model->insert("rating",$data);
 			redirect(base_url('index.php/profile'));
@@ -131,6 +144,10 @@ class Profile extends CI_Controller
 		
 		}
 		
+		public function getProfileJSON(){
+			$getList=$this->Common_model->getAll("users")->result_array();
+			echo json_encode($getList);
+		}
 
 }
 
