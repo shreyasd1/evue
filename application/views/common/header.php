@@ -98,10 +98,10 @@
                                 <div class="header-search" id="header-search">
                                     <form action="#">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search">
+                                            <input type="text"  class="form-control"  placeholder="Search">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">
-                                                    <i class="icon-magnifier"></i>
+                                                    <i class="icon-magnifier"  onclick="searchuser()" ></i>
                                                 </span>
                                             </div>
                                         </div>
@@ -110,8 +110,7 @@
                             </div>
                         </div>
                     </li>
-                </ul>
-
+                </ul>                                   
             </div>
             <div class="header-right">
                 <ul>

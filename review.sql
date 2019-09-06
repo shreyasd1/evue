@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Sep 03, 2019 at 12:17 PM
+-- Generation Time: Sep 06, 2019 at 06:49 AM
 -- Server version: 5.7.21
 -- PHP Version: 5.6.35
 
@@ -73,7 +73,14 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
   `login` varchar(50) COLLATE utf8_bin NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Dumping data for table `login_attempts`
+--
+
+INSERT INTO `login_attempts` (`id`, `ip_address`, `login`, `time`) VALUES
+(1, '::1', 'shahrukh@gmail.com', '2019-09-06 06:38:42');
 
 -- --------------------------------------------------------
 
@@ -138,18 +145,22 @@ CREATE TABLE IF NOT EXISTS `rating` (
   `rating` int(11) NOT NULL,
   `review` text NOT NULL,
   `user_id` int(11) NOT NULL,
-  `reviewed_by` int(11) NOT NULL,
+  `reviewed_by` varchar(50) NOT NULL,
+  `likes` text NOT NULL,
+  `dislikes` text NOT NULL,
+  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `rating`
 --
 
-INSERT INTO `rating` (`id`, `rating`, `review`, `user_id`, `reviewed_by`) VALUES
-(1, 3, 'hi', 0, 0),
-(2, 4, 'thanks', 0, 0),
-(3, 5, 'codeelectra technologies pvt ltd', 0, 0);
+INSERT INTO `rating` (`id`, `rating`, `review`, `user_id`, `reviewed_by`, `likes`, `dislikes`, `time`) VALUES
+(1, 4, '“I felt slightly disappointed, it could have been much better. I was also not happy with the partnership between Kedar and Dhoni, it was very slow. ', 0, '15', ',15,16', '', '2019-09-05 00:52:20'),
+(2, 3, '“I felt slightly disappointed, it could have been much better. I was also not happy with the partnership between Kedar and Dhoni, it was very slow. We batted 34 overs of spin bowling and scored 119 runs. ', 0, '15', ',15,16', '', '2019-09-05 00:52:30'),
+(3, 5, 'nice', 0, '15', ',15,16', '', '2019-09-05 18:59:10'),
+(4, 5, 'goood', 0, '15', ',15', ',16', '2019-09-05 19:29:04');
 
 -- --------------------------------------------------------
 
@@ -226,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- Dumping data for table `users`
@@ -246,7 +257,8 @@ INSERT INTO `users` (`id`, `role`, `hotel_id`, `username`, `password`, `email`, 
 (11, 1, 0, '', '', '29051998.amruta@gmail.com', 'AMRUTA MAINDARGI', '', 'https://lh5.googleusercontent.com/-t2SL8DwMxa8/AAAAAAAAAAI/AAAAAAAAAAA/ACevoQP1vMBdZUJYAVPkVgplOFhpgi4N8g/mo/photo.jpg', '', '106541518860463639511', 1, 0, NULL, NULL, NULL, NULL, NULL, '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '2019-02-11 12:17:51'),
 (12, 1, 0, '', '', 'khanshahrukh204@gmail.com', 'Shahrukh Khan', '', 'https://lh4.googleusercontent.com/-YiuxjxVlp-4/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcPGN7VjYiIf4H49qC_odnjyhQV9Q/photo.jpg', '', '100452437614315224382', 1, 0, NULL, NULL, NULL, NULL, NULL, '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '2019-07-24 08:11:13'),
 (13, 1, 0, '', '$2a$08$gE/Zk0lXMy.XfQpiWPGRGOtpbqdU6/cklH6MOj/zyl2ICpBySWYtK', 'shahrukh12@gmail.com', 'shahrukh', 'male', '', '', '', 1, 0, NULL, NULL, NULL, NULL, NULL, '192.168.1.7', '2019-07-31 11:22:08', '2019-07-31 11:21:48', '2019-07-31 05:52:08'),
-(15, 1, 0, '', '$2a$08$EBTO3qR2luhrgCdS95h58uH/WpRpWmaYtNduZghwpMEmU6f4dXKVO', 'shreyashdeshmukh618@gmail.com', 'Shreyash Deshmukh', '', 'https://lh3.googleusercontent.com/a-/AAuE7mC6QdBNVhNgAcknq-zGaXaw7fZKBTQte374IZ3q-w', '', '111900821815234640316', 1, 0, NULL, NULL, NULL, NULL, NULL, '::1', '2019-09-03 13:43:29', '2019-09-01 12:18:29', '2019-09-03 08:13:29');
+(15, 1, 0, '', '$2a$08$EBTO3qR2luhrgCdS95h58uH/WpRpWmaYtNduZghwpMEmU6f4dXKVO', 'shreyashdeshmukh618@gmail.com', 'Shreyash Deshmukh', '', 'https://lh3.googleusercontent.com/a-/AAuE7mC6QdBNVhNgAcknq-zGaXaw7fZKBTQte374IZ3q-w', '', '111900821815234640316', 1, 0, NULL, NULL, NULL, NULL, NULL, '::1', '2019-09-06 11:17:00', '2019-09-01 12:18:29', '2019-09-06 05:47:00'),
+(16, 1, 0, '', '$2a$08$sbbUpmgsZdR9Wnq0TZabnu/52kj1uNe9PfYBCkMeaiLmr4H3dkWhy', 'shahrukh1@gmail.com', 'shahrukh', 'male', '', '', '', 1, 0, NULL, NULL, NULL, NULL, NULL, '::1', '2019-09-06 12:08:47', '2019-09-04 12:43:58', '2019-09-06 06:38:47');
 
 -- --------------------------------------------------------
 
@@ -277,7 +289,7 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
   `country` varchar(20) COLLATE utf8_bin DEFAULT NULL,
   `website` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- Dumping data for table `user_profiles`
@@ -286,7 +298,8 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
 INSERT INTO `user_profiles` (`id`, `user_id`, `country`, `website`) VALUES
 (1, 1, NULL, NULL),
 (23, 13, NULL, NULL),
-(24, 15, NULL, NULL);
+(24, 15, NULL, NULL),
+(25, 16, NULL, NULL);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

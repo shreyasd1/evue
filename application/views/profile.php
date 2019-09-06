@@ -1,5 +1,7 @@
 
     <div class="content-body">
+    <div id="searchuser">
+    </div>
         <div class="container-fluid">
             <div class="row page-titles">
                 <div class="col-md-3 col-sm-4 col-lg-3 col-xl-2 p-r-0 align-self-center">
@@ -178,7 +180,8 @@
                                                  
                                                 <input type="hidden" readonly="readonly" class="form-control rating-value" name="rating" id="another-rating-stars-value"  value="2">
                                                     
-                                                
+                                                <input type="hidden" name="reviewed_by" value="<?php echo $user_authenticate['id']; ?>">
+
                                                         <div class="rating-stars-container">
                                                         <div class="rating-star">
                                                             <i class="fa fa-star" id="1" ></i>
@@ -207,27 +210,33 @@
                                                         </div>
                                                         </form>
                                                         <?php $i=1; foreach($my_list as $list){ ?>
+                                                            <?php $likes_number=sizeof(explode(',',$list['likes'])); ?>
+                                                            <?php $dislikes_number=sizeof(explode(',',$list['dislikes'])); ?>
                                                 <div class="profile-uoloaded-post border-bottom-1 p-b-30">
-                                                    <img src="<?php echo base_url('/assets');?>/images/profile/8.jpg" alt="" class="img-fluid">
                                                     <p><?php echo $list['review'];?></p>
                                                     <a class="post-title">
                                                     <?php
                                                     for($x=1;$x<=$list['rating']; $x++) {
                                                     echo '
-                                                    <i class="fa fa-star" id="1" ></i> ';
+                                                    <i class="ti-star color-primary"></i> ';
                                                     }
                                                    
                                                     ?>
                                                     </a><br><br>
-                                                    <button class="btn btn-primary f-s-14 m-r-10">
-                                                        <i class="fa fa-heart f-s-14 m-r-5"></i>Like</button>
-                                                    <button class="btn btn-secondary f-s-14">
-                                                        <i class="fa fa-reply f-s-14 m-r-5"></i>Reply</button>
+                                                    <button class="btn btn-primary f-s-14 m-r-10"   onclick="like(<?php echo $list['id'];  ?>)">
+                                                        <i class="fa fa-heart f-s-14 m-r-5">&nbsp;&nbsp;<span id="ln1<?php echo $list['id'];  ?>"><?php echo $likes_number-1; ?></span></i>Like</button>
+                                                        &nbsp&nbsp&nbsp 
+                                                        <button class="btn btn-secondary"   onclick="dislike(<?php echo $list['id'];  ?>)">
+                                                        <i class="fa fa-heart f-s-14 m-r-5">&nbsp;&nbsp; <span  id="dln1<?php echo $list['id'];  ?>"><?php echo $dislikes_number-1; ?></span></i>dislike</button>
+                                                        <span  id="sd1"></span>&nbsp&nbsp&nbsp
+                                                  
+                                                </div>
                                                 </div>
                                                         <?php }?>
                                                 <div class="text-center m-t-30 m-b-30">
-                                                    <a href="#" class="btn btn-light"> Load More</a>
+                                                    <a class="btn btn-info"> Load More</a>
                                                 </div>
+                                               
                                             </div>
                                         </div>
                                        
@@ -242,5 +251,38 @@
         <!-- #/ container -->
     </div>
     <!-- #/ content body -->
+    <script>
+   function like(id){
+    var review_id=id;
+        $.ajax({
+                url: '<?php echo base_url(); ?>index.php/Profile/like',
+                type: 'post',
+                data: {like:review_id},
+                dataType: 'json',
+                cache: false,
 
+                success:function(response){
+                    $("#ln1"+review_id).html(response.l);
+                    $("#dln1"+review_id).html(response.dl);
+                }
+            });
+        
+   }
+   function dislike(id){
+    var review_id=id;
+    $.ajax({
+                url: '<?php echo base_url(); ?>index.php/Profile/dislike',
+                type: 'post',
+                data: {dislike:review_id},
+                dataType: 'json',
+                cache: false,
+
+                success:function(response){
+                    $("#ln1"+review_id).html(response.l);
+                    $("#dln1"+review_id).html(response.dl);
+                }
+            });
+   }
    
+</script>
+
