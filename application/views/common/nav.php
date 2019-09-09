@@ -3,8 +3,8 @@
         <div class="nk-nav-scroll">
 
             <div class="nav-user">
-                <img src="<?php echo base_url('/assets');?>/images/users/1.jpg" alt="" class="rounded-circle">
-                <h5><?php echo $user_authenticate['name']; ?></h5><br>
+                <a href="<?php echo base_url("index.php/welcome")?>"><img src="<?php echo $thisuser['profile_image']?>" alt="" class="rounded-circle">
+                <h5><?php echo $thisuser['name']; ?></h5><br></a>
 
                 <div class="nav-user-option">
                     <div class="setting-option">

@@ -28,14 +28,14 @@
     <script>
    function searchuser(){
        $.getJSON("<?php echo base_url();?>index.php/Profile/getProfileJSON/",function(data){
-
+        $("#searchuser").empty();
         $("#searchuser").append('<div class="col-xl-3"><div class="card"> <div class="card-body"> <h4 class="card-title">users</h4><div class="media border-bottom-1 p-t-15"> <div class="media-body m-b-15"> <ul id="name"></ul> </div></div></div></div></div>');
         $("#name").empty();
         for(var i=0;i< data.length;i++){
         $("#name").append("<a href='<?php echo base_url();?>index.php/Profile/getProfile/"+data[i].id+"'><li><img class='mr-3 rounded-circle' style='width:40px;' src="+data[i].profile_image+">"+data[i].name+"</li></a>");
         }
-    })
-   die();
+    });
+   
    }
 
 </script>

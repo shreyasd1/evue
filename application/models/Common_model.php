@@ -14,12 +14,11 @@ class Common_Model extends CI_Model
 		$query = $this->db->get($tablename);
 		return $query;
 	}
-	public function getCurrentAvg($tablename,$where='',$orderby='',$column='')
+	public function getRatingAvg($tablename,$where='',$orderby='',$column='')
 	{
-		$this->db->select('current');
+		$this->db->select('AVG(rating)');
 		if($where!=''){ $this->db->where($where); }
 		if($orderby!=''){ $this->db->order_by($column,$orderby); }
-		$this->db->limit(5);
 		
 		$query = $this->db->get($tablename);
 		return $query;

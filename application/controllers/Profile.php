@@ -22,9 +22,13 @@ class Profile extends CI_Controller
 					$data['user_id']	= $this->tank_auth->get_user_id();
 					$data['username']	= $this->tank_auth->get_username();
 					$data['name']		= $this->session->userdata("name");
+					$data['user_authenticate']=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
+					$data['thisuser']=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
+					$data['ab']=$this->Common_model->getAll('rating',array('user_id'=>$this->tank_auth->get_user_id()))->result_array();
+					$data['avgrating']=$this->Common_model->getRatingAvg('rating',array('user_id'=>$this->tank_auth->get_user_id()))->result_array();
 
 					$data['add_review']  =base_url().'index.php/Profile/add_review';
-					$data['my_list'] =$this->Common_model->getAll('rating')->result_array();
+					$data['my_list'] =$this->Common_model->getAll('rating',array('user_id'=>$this->tank_auth->get_user_id()))->result_array();
 
 				$this->load->view('common/header');
 				$this->load->view('common/nav',$data);
@@ -37,7 +41,10 @@ class Profile extends CI_Controller
 		public function getProfile($id){
 				$data['user_authenticate']=$this->Common_model->getAll("users",array('id'=>$id))->row_array();
 				$data['add_review']  =base_url().'index.php/Profile/add_review';
-				$data['my_list'] =$this->Common_model->getAll('rating')->result_array();
+				$data['my_list'] =$this->Common_model->getAll('rating',array('user_id'=>$id))->result_array();
+				$data['thisuser']=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
+				$data['ab']=$this->Common_model->getAll('rating',array('user_id'=>$id))->result_array();
+				$data['avgrating']=$this->Common_model->getRatingAvg('rating',array('user_id'=>$id))->result_array();
 
 				$this->load->view('common/header');
 				$this->load->view('common/nav',$data);
@@ -45,12 +52,9 @@ class Profile extends CI_Controller
 				$this->load->view('common/footer');
 		}
 		function add_review(){
-			
-			$data['my_list'] =$this->Common_model->getAll('rating')->result_array();
-
 			$data=$this->input->post();
 			$insert=$this->Common_model->insert("rating",$data);
-			redirect(base_url('index.php/profile'));
+			redirect(base_url('index.php/Profile/getProfile/'.$data['user_id']));
 			
 	 
 		}
@@ -149,5 +153,92 @@ class Profile extends CI_Controller
 			echo json_encode($getList);
 		}
 
+		public function follow(){
+			$toFollowID=$this->input->post('dataID');//jisko follow karna hai uski id
+			$id = $this->tank_auth->get_user_id();
+			//uski row me apne id daalneka followers me
+			//uski row fetch karenge
+			$getFollowListFrom = $this->Common_model->getAll("follow",array('user_id'=>$id))->row_array();//logged in user list
+			$getFollowListTo = $this->Common_model->getAll("follow",array('user_id'=>$toFollowID))->row_array();
+
+			//agar donoke koi followers nahi hai
+			if(empty($getFollowListFrom) && empty($getFollowListTo)){
+				//insert into follow table for both users
+				$insertFrom = $this->Common_model->insert("follow",array('following'=>$toFollowID, 'user_id'=>$id));
+				
+				$insertTo = $this->Common_model->insert("follow",array('follower'=>$id,'user_id'=>$toFollowID));
+				echo json_encode(true);
+			}
+			else if(!empty($getFollowListFrom) && empty($getFollowListTo)){
+				
+				$expl_from_following = explode(',',$getFollowListFrom['following']);
+				
+				
+				array_push($expl_from_following,$toFollowID);//khudki following list me uska id add kiya
+				$impl_from = implode(',',$expl_from_following);
+				
+				$updateFrom = $this->Common_model->update('follow',array('following'=>$impl_from),array('user_id'=>$id));
+				//now updated khudka list
+
+				//now we will insert into uska list
+				$insertTo = $this->Common_model->insert("follow",array('follower'=>$id,'user_id'=>$toFollowID));
+				echo json_encode(true);
+			}
+			else if(empty($getFollowListFrom) && !empty($getFollowListTo)){
+				$expl_to_follower = explode(',',$getFollowListTo['follower']);
+				array_push($expl_to_follower,$id);//khudki following list me uska id add kiya
+				$impl_to = implode(',',$expl_to_follower);
+				$updateTo = $this->Common_model->update('follow',array('follower'=>$impl_to),array('user_id'=>$toFollowID));
+
+				//now updated uska list
+				//now inster into apna list
+
+				$insertFrom = $this->Common_model->insert("follow",array('following'=>$toFollowID,'user_id'=>$id));
+				echo json_encode(true);
+			}
+
+
+			else if(!empty($getFollowListFrom) && !empty($getFollowListTo)){
+				$expl_from_following = explode(',',$getFollowListFrom['following']);
+				array_push($expl_from_following,$toFollowID);//khudki following list me uska id add kiya
+				$impl_from = implode(',',$expl_from_following);
+				$updateFrom = $this->Common_model->update('follow',array('following'=>$impl_from),array('user_id'=>$id));
+
+
+
+				$expl_to_follower = explode(',',$getFollowListTo['follower']);
+				array_push($expl_to_follower,$id);//khudki following list me uska id add kiya
+				$impl_to = implode(',',$expl_to_follower);
+				$updateTo = $this->Common_model->update('follow',array('follower'=>$impl_to),array('user_id'=>$toFollowID));
+				echo json_encode(true);
+			}
+			
+		}
+
+
+		public function unfollow(){
+			$toFollowID=$this->input->post('dataID');//jisko unfollow karna hai uski id
+			$id = $this->tank_auth->get_user_id();
+
+			$myFollowing = $this->Common_model->getAll("follow", array('user_id'=>$id))->row_array();
+
+			$expl_following = explode(',',$myFollowing['following']);
+			$key = array_search($toFollowID,$expl_following);
+			unset($expl_following[$key]);
+			$impl_following = implode(',',$expl_following);
+			$updateFollowing = $this->Common_model->update('follow',array('following'=>$impl_following),array('user_id'=>$id));
+			
+
+			//now his follower list to be updated
+			$hisFollower = $this->Common_model->getAll("follow", array('user_id'=>$toFollowID))->row_array();
+			$expl_follower = explode(',',$hisFollower['follower']);
+			$key1 = array_search($id,$expl_follower);
+			unset($expl_follower[$key1]);
+			$impl_hisFollower = implode(',',$expl_follower);
+			$updateFollower = $this->Common_model->update('follow',array('follower'=>$impl_hisFollower),array('user_id'=>$toFollowID));
+			
+			echo json_encode(true);
+		}
+		
 }
 

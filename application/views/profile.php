@@ -3,18 +3,7 @@
     <div id="searchuser">
     </div>
         <div class="container-fluid">
-            <div class="row page-titles">
-                <div class="col-md-3 col-sm-4 col-lg-3 col-xl-2 p-r-0 align-self-center">
-                    <h3 class="text-primary">Dashboard</h3>
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="javascript:void(0)">App</a>
-                        </li>
-                        <li class="breadcrumb-item active">Profile</li>
-                    </ol>
-                </div>
-                
-            </div>
+           
             <!-- row -->
 
             <div class="row">
@@ -24,23 +13,24 @@
                             <div class="photo-content">
                                 <div class="cover-photo"></div>
                                 <div class="profile-photo">
-                                    <img src="<?php echo base_url('/assets');?>/images/profile/profile.png" class="img-fluid rounded-circle" alt="">
+                                    <img src="<?php echo $user_authenticate['profile_image'];?>" class="img-fluid rounded-circle" alt="">
                                 </div>
-                            </div>
+                            </div><br>
                             <div class="profile-info">
                                 <div class="row justify-content-center">
                                     <div class="col-xl-8">
                                         <div class="row">
-                                            <div class="col-xl-4 col-sm-4 border-right-1 prf-col">
+                                            <div class="col-xl-2 col-sm-4 border-right-1 prf-col">
                                                 <div class="profile-name">
                                                     <h4 class="text-primary"><?php echo $user_authenticate['name']; ?></h4>
-                                                    <p>UX / UI Designer</p>
+                                                   
                                                 </div>
                                             </div>
-                                            <div class="col-xl-4 col-sm-4 border-right-1 prf-col">
+                                            <div class="col-xl-2 col-sm-4 border-right-1 prf-col">
                                                 <div class="profile-email">
-                                                    <h4 class="text-muted"><?php echo $user_authenticate['email']; ?></h4>
-                                                    <p>Email</p>
+                                                    
+                                                    <h4 class="text-muted"><i class="ti-star color-warning">&nbsp;</i><?php echo (number_format((float)$avgrating[0]['AVG(rating)'], 1, '.', '')); ?></h4>          
+                                                    <p>average rating</p>
                                                 </div>
                                             </div>
                                            
@@ -67,19 +57,73 @@
                                         </div>
                                         <div class="col">
                                             <h3 class="m-b-0">140</h3>
-                                            <span>Place Stay</span>
+                                            <span>following</span>
                                         </div>
                                         <div class="col">
-                                            <h3 class="m-b-0">45</h3>
+                                            <h3 class="m-b-0"><?php echo count($ab);?></h3>
                                             <span>Reviews</span>
                                         </div>
                                     </div>
-                                    <div class="m-t-20">
-                                        <a href="#" class="btn btn-primary f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Follow</a>
-                                        <a href="#" class="btn btn-dark f-s-14 p-l-30 p-r-30 m-b-15">Send Message</a>
+                                    
+                                    <div class="m-t-20" id="followButton">
+                                    <?php 
+                                        $getFollowersList = $this->Common_model->getAll("follow",array('user_id'=>$user_authenticate['id']))->row_array();
+                                        
+                                        if(isset($getFollowersList)){
+                                            $expl_followers = explode(',',$getFollowersList['follower']);
+                                           
+                                            if(!in_array($thisuser['id'],$expl_followers)){ ?>
+                                            
+                                            <button onclick="follow(<?php echo $user_authenticate['id']; ?>);" class="btn btn-primary f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Follow</button>
+                                        <?php }else{ ?>
+                                            <button onclick="unfollow(<?php echo $user_authenticate['id']; ?>);" class="btn btn-success f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Following</button>
+                                       <?php  }//else 
+                                    
+                                    }else{ ?>
+                                        <button onclick="follow(<?php echo $user_authenticate['id']; ?>);" class="btn btn-primary f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Follow</button>
+                                    <?php }//main if?>
+                                                                                  
                                     </div>
                                 </div>
                             </div>
+                           <script>
+                            function follow(id){
+                                
+                                $.ajax({
+                                    url: '<?php echo base_url(); ?>index.php/Profile/follow/',
+                                    type: 'post',
+                                    data: {dataID:id},
+                                    dataType: 'json',
+                                    cache: false,
+
+                                    success:function(response){
+                                       $("#followButton").empty();
+                                       $("#followButton").append('<button onclick="unfollow(<?php echo $user_authenticate['id']; ?>);" class="btn btn-success f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Following</button>');
+                                    }
+                                });
+                            }
+                            function unfollow(id){
+                                
+                                $.ajax({
+                                    url: '<?php echo base_url(); ?>index.php/Profile/unfollow/',
+                                    type: 'post',
+                                    data: {dataID:id},
+                                    dataType: 'json',
+                                    cache: false,
+
+                                    success:function(response){
+                                       $("#followButton").empty();
+                                       $("#followButton").append('<button onclick="follow(<?php echo $user_authenticate['id']; ?>);" class="btn btn-primary f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Follow</button>');                                       
+                                    }
+                                });
+                            }
+                           </script>
+
+
+
+
+
+
                             <div class="profile-blog p-t-15 border-bottom-1 p-b-5">
                                 <h5 class="text-primary d-inline">Today Highlights</h5>
                                 <a href="#" class="pull-right f-s-16">More</a>
@@ -180,7 +224,8 @@
                                                  
                                                 <input type="hidden" readonly="readonly" class="form-control rating-value" name="rating" id="another-rating-stars-value"  value="2">
                                                     
-                                                <input type="hidden" name="reviewed_by" value="<?php echo $user_authenticate['id']; ?>">
+                                                <input type="hidden" name="user_id" value="<?php echo $user_authenticate['id']; ?>">
+                                                <input type="hidden" name="reviewed_by" value="<?php echo $thisuser['id']; ?>">
 
                                                         <div class="rating-stars-container">
                                                         <div class="rating-star">
@@ -218,7 +263,7 @@
                                                     <?php
                                                     for($x=1;$x<=$list['rating']; $x++) {
                                                     echo '
-                                                    <i class="ti-star color-primary"></i> ';
+                                                    <i class="ti-star color-warning"></i> ';
                                                     }
                                                    
                                                     ?>
