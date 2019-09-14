@@ -12,26 +12,13 @@
                             <i class="icon-settings"></i>
                         </div>
                         <div class="dropdown-menu animated flipInX">
-                            <a class="dropdown-item" href="#">Account</a>
-                            <a class="dropdown-item" href="#">Lock</a>
+                           <div > <a class="dropdown-item" id="hidereviews" onclick="hide(<?php echo $thisuser['id']; ?>)">hide reviews</a></div>
                             <a class="dropdown-item" href="<?php echo base_url('index.php/auth/logout'); ?>">Logout</a>
                         </div>
                     </div>
                     <div class="notification-option">
-                        <div data-toggle="dropdown">
-                            <i class="icon-bell"></i>
-                        </div>
-                        <div class="dropdown-menu animated flipInX">
-                            <a class="dropdown-item" href="#">Email
-                                <span class="badge badge-primary pull-right m-t-3">05</span>
-                            </a>
-                            <a class="dropdown-item" href="#">Feed back
-                                <span class="badge badge-danger pull-right m-t-3">02</span>
-                            </a>
-                            <a class="dropdown-item" href="#">Report
-                                <span class="badge badge-warning pull-right m-t-3">02</span>
-                            </a>
-                        </div>
+                       
+                      
                     </div>
                 </div>
             </div>
@@ -48,3 +35,26 @@
         </div>
     </div>
 </div>
+<script>
+function hide(id){
+                                
+    $.ajax({
+        url: '<?php echo base_url(); ?>index.php/Profile/hide/',
+        type: 'post',
+        data: {hideID:id},
+        dataType: 'json',
+        cache: false,
+
+        success:function(response){
+          if(response.data=='hidden'){
+              $("#hidereviews").html('unhide');
+          }
+          else{
+            $("#hidereviews").html('hide');
+          }
+            
+        }
+    });
+    
+}
+</script>

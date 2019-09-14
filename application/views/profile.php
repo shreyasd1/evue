@@ -30,7 +30,7 @@
                                                 <div class="profile-email">
                                                     
                                                     <h4 class="text-muted"><i class="ti-star color-warning">&nbsp;</i><?php echo (number_format((float)$avgrating[0]['AVG(rating)'], 1, '.', '')); ?></h4>          
-                                                    <p>average rating</p>
+                                                    <p>AVERAGE RATING</p>
                                                 </div>
                                             </div>
                                            
@@ -52,11 +52,11 @@
                                 <div class="text-center m-t-15 border-bottom-1 p-b-15">
                                     <div class="row">
                                         <div class="col">
-                                            <h3 class="m-b-0">150</h3>
+                                        <h3 class="m-b-0"><?php echo (count($expl_follower)-1);?></h3> 
                                             <span>Follower</span>
                                         </div>
                                         <div class="col">
-                                            <h3 class="m-b-0">140</h3>
+                                        <h3 class="m-b-0"><?php echo (count($expl_following)-1);?></h3>
                                             <span>following</span>
                                         </div>
                                         <div class="col">
@@ -66,6 +66,7 @@
                                     </div>
                                     
                                     <div class="m-t-20" id="followButton">
+                                    <?php if($this->tank_auth->get_user_id()!= $user_authenticate['id']) { ?>
                                     <?php 
                                         $getFollowersList = $this->Common_model->getAll("follow",array('user_id'=>$user_authenticate['id']))->row_array();
                                         
@@ -82,7 +83,7 @@
                                     }else{ ?>
                                         <button onclick="follow(<?php echo $user_authenticate['id']; ?>);" class="btn btn-primary f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Follow</button>
                                     <?php }//main if?>
-                                                                                  
+                                    <?php }?>                                          
                                     </div>
                                 </div>
                             </div>
@@ -99,8 +100,11 @@
                                     success:function(response){
                                        $("#followButton").empty();
                                        $("#followButton").append('<button onclick="unfollow(<?php echo $user_authenticate['id']; ?>);" class="btn btn-success f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Following</button>');
+                                      
+                                      
                                     }
                                 });
+                               
                             }
                             function unfollow(id){
                                 
@@ -114,94 +118,55 @@
                                     success:function(response){
                                        $("#followButton").empty();
                                        $("#followButton").append('<button onclick="follow(<?php echo $user_authenticate['id']; ?>);" class="btn btn-primary f-s-14 p-l-30 p-r-30 m-r-10 m-b-15">Follow</button>');                                       
+                                      
                                     }
                                 });
+                                
                             }
                            </script>
-
-
-
-
-
-
-                            <div class="profile-blog p-t-15 border-bottom-1 p-b-5">
-                                <h5 class="text-primary d-inline">Today Highlights</h5>
-                                <a href="#" class="pull-right f-s-16">More</a>
-                                <img src="<?php echo base_url('/assets');?>/images/profile/1.jpg" alt="" class="img-fluid m-t-15 m-b-15 w-100">
-
-                                <h4>Darwin Creative Agency Theme</h4>
-                                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.
-                                    It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+                           <!--highlight start -->
+                           
+                           <div class="card-body">
+                           <?php if($this->tank_auth->get_user_id()== $user_authenticate['id']) { ?>
+                                <h4 class="card-title">Review Requests</h4>
+                                <div class="table-responsive">
+                                <table class="table verticle-middle">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col"> Name</th>
+                                            <th scope="col">review</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php $i=1; foreach($req_list as $list){ ?>
+                                           <?php $getprofiledetails =$this->Common_model->getAll("users",array('id'=>$list['requested_by']))->row_array();?>
+                                        <tr class="accept<?php echo  $getprofiledetails['id']?>">
+                                            <td>
+                                                <img alt="" class=" w-30px rounded-circle m-r-10"  src="<?php echo $getprofiledetails['profile_image'];?>"> <?php echo $getprofiledetails['name'];?>
+                                            </td>
+                                            <td>
+                                            <?php echo $list['review_id']?>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                
+                                                    <a title="" data-placement="top" data-toggle="tooltip" onclick="accept( <?php echo $list['review_id']?>, <?php echo $getprofiledetails['id'];?>)" id="12" data-original-title="accept">
+                                                        <i class="fa fa-check color-muted m-r-5"></i>
+                                                    </a>
+                                                    <a title="" data-placement="top" data-toggle="tooltip" onclick="reject()" data-original-title="reject">
+                                                        <i class="fa fa-close color-danger"></i>
+                                                    </a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php }?>
+                                    </tbody>
+                                </table>
                             </div>
+                            <?php }?>
 
-                            <div class="profile-interest m-t-15 p-b-10 border-bottom-1">
-                                <h5 class="text-primary d-inline">Interest</h5>
-                                <div class="row m-t-15">
-                                    <div class="col-lg-4 col-xl-4 col-sm-4 col-6 int-col">
-                                        <a href="#" class="interest-cat">
-                                            <img src="<?php echo base_url('/assets');?>/images/profile/2.jpg" alt="" class="img-fluid">
-                                            <p>Shopping Mall</p>
-                                        </a>
-                                    </div>
-                                    <div class="col-lg-4 col-xl-4 col-sm-4 col-6 int-col">
-                                        <a href="#" class="interest-cat">
-                                            <img src="<?php echo base_url('/assets');?>/images/profile/3.jpg" alt="" class="img-fluid">
-                                            <p>Photography </p>
-                                        </a>
-                                    </div>
-                                    <div class="col-lg-4 col-xl-4 col-sm-4 col-6 int-col">
-                                        <a href="#" class="interest-cat">
-                                            <img src="<?php echo base_url('/assets');?>/images/profile/4.jpg" alt="" class="img-fluid">
-                                            <p>Art & Gallery </p>
-                                        </a>
-                                    </div>
-                                    <div class="col-lg-4 col-xl-4 col-sm-4 col-6 int-col">
-                                        <a href="#" class="interest-cat">
-                                            <img src="<?php echo base_url('/assets');?>/images/profile/2.jpg" alt="" class="img-fluid">
-                                            <p>Visiting Place </p>
-                                        </a>
-                                    </div>
-                                    <div class="col-lg-4 col-xl-4 col-sm-4 col-6 int-col">
-                                        <a href="#" class="interest-cat">
-                                            <img src="<?php echo base_url('/assets');?>/images/profile/3.jpg" alt="" class="img-fluid">
-                                            <p>Shopping </p>
-                                        </a>
-                                    </div>
-                                    <div class="col-lg-4 col-xl-4 col-sm-4 col-6 int-col">
-                                        <a href="#" class="interest-cat">
-                                            <img src="<?php echo base_url('/assets');?>/images/profile/4.jpg" alt="" class="img-fluid">
-                                            <p>Biking </p>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="profile-news m-t-15 p-b-15">
-                                <h5 class="text-primary d-inline">Our Latest News</h5>
-                                <div class="media p-t-15 p-b-15">
-                                    <img src="<?php echo base_url('/assets');?>/images/profile/5.jpg" class="mr-3">
-                                    <div class="media-body">
-                                        <h5 class="m-b-5">John Tomas</h5>
-                                        <p>I shared this on my fb wall a few months back, and I thought I'd share it here again
-                                            because it's such a great read</p>
-                                    </div>
-                                </div>
-                                <div class="media p-t-15 p-b-15">
-                                    <img src="<?php echo base_url('/assets');?>/images/profile/6.jpg" class="mr-3">
-                                    <div class="media-body">
-                                        <h5 class="m-b-5">John Tomas</h5>
-                                        <p>I shared this on my fb wall a few months back, and I thought I'd share it here again
-                                            because it's such a great read</p>
-                                    </div>
-                                </div>
-                                <div class="media p-t-15 p-b-15">
-                                    <img src="<?php echo base_url('/assets');?>/images/profile/7.jpg" class="mr-3">
-                                    <div class="media-body">
-                                        <h5 class="m-b-5">John Tomas</h5>
-                                        <p>I shared this on my fb wall a few months back, and I thought I'd share it here again
-                                            because it's such a great read</p>
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -219,14 +184,23 @@
                                     <div class="tab-content">
                                         <div id="my-posts" class="tab-pane fade active show">
                                             <div class="my-post-content p-t-15">
-                                            <?php echo form_open_multipart($add_review); ?>		
+                                            <?php if($this->tank_auth->get_user_id()!= $user_authenticate['id']) { ?>
+                                            <?php echo form_open_multipart($add_review); ?>	
+                                            <!--hide status part start -->
+                                            <?php  $getstatusList = $this->Common_model->getAll("config",array('user_id'=>$user_authenticate['id']))->row_array();?>	
+                                           <?php if($getstatusList['hide']=="0"){?>
+                                                <input type="hidden" name="hide_status" value="0">
+                                          <?php  }else if($getstatusList['hide']=="1") {?>
+                                                <input type="hidden" name="hide_status" value="1">
+                                          <?php  }else{?>
+                                            <input type="hidden" name="hide_status" value="0">
+                                          <?php }?>
+                                          <!--hide status part ends -->
                                                 <div class="rating-stars block" id="another-rating">
-                                                 
                                                 <input type="hidden" readonly="readonly" class="form-control rating-value" name="rating" id="another-rating-stars-value"  value="2">
-                                                    
                                                 <input type="hidden" name="user_id" value="<?php echo $user_authenticate['id']; ?>">
                                                 <input type="hidden" name="reviewed_by" value="<?php echo $thisuser['id']; ?>">
-
+                                                
                                                         <div class="rating-stars-container">
                                                         <div class="rating-star">
                                                             <i class="fa fa-star" id="1" ></i>
@@ -253,12 +227,19 @@
                                                         <div class="wrapper">
                                                             <button  type="submit" plceholder="submit"   class="btn btn-primary">submit</button>
                                                         </div>
+                                            <?php } ?>
                                                         </form>
                                                         <?php $i=1; foreach($my_list as $list){ ?>
                                                             <?php $likes_number=sizeof(explode(',',$list['likes'])); ?>
                                                             <?php $dislikes_number=sizeof(explode(',',$list['dislikes'])); ?>
                                                 <div class="profile-uoloaded-post border-bottom-1 p-b-30">
-                                                    <p><?php echo $list['review'];?></p>
+                                                <?php if($list['hide_status']=='1' && $list['user_id']!=$this->tank_auth->get_user_id() ){?>
+                                                    <p ><?php echo "-------------- Review Hidden ------------";?></p>
+                                                <?php } else if($list['hide_status']=='1' && $list['user_id']==$this->tank_auth->get_user_id()){ ?>
+                                                    <p ><?php echo $list['review'];?></p>
+                                                <?php } else{ ?>
+                                                    <p ><?php echo $list['review'];?></p>
+                                                <?php } ?>
                                                     <a class="post-title">
                                                     <?php
                                                     for($x=1;$x<=$list['rating']; $x++) {
@@ -274,14 +255,15 @@
                                                         <button class="btn btn-secondary"   onclick="dislike(<?php echo $list['id'];  ?>)">
                                                         <i class="fa fa-heart f-s-14 m-r-5">&nbsp;&nbsp; <span  id="dln1<?php echo $list['id'];  ?>"><?php echo $dislikes_number-1; ?></span></i>dislike</button>
                                                         <span  id="sd1"></span>&nbsp&nbsp&nbsp
-                                                  
+                                                        <?php if($list['hide_status']=='1' && $list['user_id']!=$this->tank_auth->get_user_id() ){?>
+                                                        <button id="request" class="btn btn-warning f-s-14 m-r-10"  onclick="alert()">Request Review</button>
+                                                        <?php }?>
                                                 </div>
                                                 </div>
                                                         <?php }?>
                                                 <div class="text-center m-t-30 m-b-30">
                                                     <a class="btn btn-info"> Load More</a>
                                                 </div>
-                                               
                                             </div>
                                         </div>
                                        
@@ -330,4 +312,33 @@
    }
    
 </script>
+<script> 
+function accept(id,req_id){
+    
+    $.ajax({
+                url: '<?php echo base_url(); ?>index.php/Profile/accept/'+id+'/'+req_id,
+                type: 'post',
+                dataType: 'json',
+                cache: false,
 
+                success:function(response){
+                   $(".accept"+req_id).hide();
+                }
+            });
+
+}
+function reject(){
+    $.ajax({
+                url: '<?php echo base_url(); ?>index.php/Profile/dislike',
+                type: 'post',
+                data: {dislike:review_id},
+                dataType: 'json',
+                cache: false,
+
+                success:function(response){
+                    $("#ln1"+review_id).html(response.l);
+                    $("#dln1"+review_id).html(response.dl);
+                }
+            });
+}
+</script>

@@ -26,14 +26,21 @@ class Profile extends CI_Controller
 					$data['thisuser']=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
 					$data['ab']=$this->Common_model->getAll('rating',array('user_id'=>$this->tank_auth->get_user_id()))->result_array();
 					$data['avgrating']=$this->Common_model->getRatingAvg('rating',array('user_id'=>$this->tank_auth->get_user_id()))->result_array();
-
+					$data['hide']=base_url().'index.php/Profile/hide';
 					$data['add_review']  =base_url().'index.php/Profile/add_review';
 					$data['my_list'] =$this->Common_model->getAll('rating',array('user_id'=>$this->tank_auth->get_user_id()))->result_array();
+					$data['req_list']=$this->Common_model->getAll('request',array('requested_to'=>$this->tank_auth->get_user_id()))->result_array();
+					//followers count
+					$getfollowList = $this->Common_model->getAll("follow",array('user_id'=>$this->tank_auth->get_user_id()))->row_array();
+					$data['expl_follower']=explode(',',$getfollowList['follower']);
+					$getfollowinglist = $this->Common_model->getAll("follow",array('user_id'=>$this->tank_auth->get_user_id()))->row_array();	
+					$data['expl_following']=explode(',',$getfollowList['following']);
+					//count ends here 
 
-				$this->load->view('common/header');
-				$this->load->view('common/nav',$data);
-				$this->load->view('profile',$data);
-				$this->load->view('common/footer');
+					$this->load->view('common/header');
+					$this->load->view('common/nav',$data);
+					$this->load->view('profile',$data);
+					$this->load->view('common/footer');
 
 		}
 	}
@@ -45,12 +52,20 @@ class Profile extends CI_Controller
 				$data['thisuser']=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
 				$data['ab']=$this->Common_model->getAll('rating',array('user_id'=>$id))->result_array();
 				$data['avgrating']=$this->Common_model->getRatingAvg('rating',array('user_id'=>$id))->result_array();
-
+				$data['userinfo']	= $this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
+				//followers count
+				$getfollowList = $this->Common_model->getAll("follow",array('user_id'=>$id))->row_array();
+				$data['expl_follower']=explode(',',$getfollowList['follower']);
+				$getfollowinglist = $this->Common_model->getAll("follow",array('user_id'=>$id))->row_array();	
+				$data['expl_following']=explode(',',$getfollowinglist['following']);
+				//count ends here
 				$this->load->view('common/header');
-				$this->load->view('common/nav',$data);
 				$this->load->view('profile',$data);
+				$this->load->view('common/nav',$data);
 				$this->load->view('common/footer');
 		}
+
+		
 		function add_review(){
 			$data=$this->input->post();
 			$insert=$this->Common_model->insert("rating",$data);
@@ -239,6 +254,50 @@ class Profile extends CI_Controller
 			
 			echo json_encode(true);
 		}
+		public function hide()
+		{
+			$id = $this->tank_auth->get_user_id();
+
+			$gethideList = $this->Common_model->getAll("config",array('user_id'=>$id))->row_array();//logged in user list
+			if(empty($gethideList)){
+			$insert = $this->Common_model->insert("config",array('hide'=>1, 'user_id'=>$id));
+			echo json_encode('hidden');
+			}
+			else{
+			if($gethideList['hide']=='0'){
+				$updatehide = $this->Common_model->update('config',array('hide'=>'1'),array('user_id'=>$id));
+				echo json_encode('hidden');
+
+			}else{
+				$updatehide = $this->Common_model->update('config',array('hide'=>'0'),array('user_id'=>$id));
+				echo json_encode('unhide');
+
+			}
+			
+
+			}
+		}
+		public function request($id){
+		$thisid=$this->tank_auth->get_user_id();//this is requested by
+		$req_to = $this->Common_model->getAll("rating", array('id'=>$id))->row_array();
+		$req_to2=$req_to['user_id'];
+		$insert=$this->Common_model->insert("request",array("requested_to"=>$req_to2,"requested_by"=>$thisid,"review_id"=>$id));
+		echo json_encode(true);
+		}
 		
+		public function accept($id,$req_id){
+		$gettowhomlist=$this->Common_model->getAll("rating",array("id"=>$id))->row_array();
+		$expl_towhom=explode(',',$gettowhomlist['to_whom']);
+		
+		array_push($expl_towhom,$req_id);
+		$impl_towhom = implode(',',$expl_towhom);
+		
+		$updatetowhom = $this->Common_model->update('rating',array('to_whom'=>$impl_towhom),array('id'=>$id));
+		if($updatetowhom=='1'){
+			$deleteRequest=$this->Common_model->delete('request',array('review_id'=>$id,'requested_by'=>$req_id));
+			echo ($deleteRequest);
+		}
+
+		}
 }
 

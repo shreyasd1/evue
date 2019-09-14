@@ -89,10 +89,10 @@
      <div class="header-content">
         <div class="header-left">
                         <a href="javascript:void(0)">                           
-                        <div class="header-search" id="header-search">
+                        <p>  <div class="header-search" id="header-search">
                             <form action="#">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search">
+                                   <input type="text" class="form-control" placeholder="Search">
                                     <div class="input-group-append">
                                         <span class="input-group-text">
                                             <i class="icon-magnifier" onclick="searchuser()"></i>
@@ -100,7 +100,7 @@
                                     </div>
                                 </div>
                             </form>
-                        </div>
+                        </div> </p>
                         </a>
          </div>
             <div class="header-right">

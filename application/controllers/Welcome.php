@@ -23,8 +23,8 @@ class Welcome extends CI_Controller
 					$data['user_id']	= $this->tank_auth->get_user_id();
 					$data['username']	= $this->tank_auth->get_username();
 					$data['name']		= $this->session->userdata("name");
-					$data['my_list'] =$this->Common_model->getAll('rating')->result_array();
-					$data['thisuser']=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
+					$data['my_list'] 	=$this->Common_model->getAll('rating')->result_array();
+					$data['thisuser']	=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
 
 					$data['user_authenticate']=$this->Common_model->getAll("users",array('id'=>$this->tank_auth->get_user_id()))->row_array();
 				//	$data['add_registration'] = base_url().'Welcome/add';
